@@ -2,7 +2,9 @@ import express from "express";
 import { connect } from "mongoose";
 import dotenv from "dotenv";
 
-dotenv.config();
+import { getMongoDbOptions } from "./options/mongoDbOptions.js";
+
+const config = dotenv.config();
 
 const app = express();
 
@@ -12,7 +14,7 @@ app.get("/", (req, res) => {
 
 // connection to mongo with mongoose, handling errors
 
-connect(`${process.env.MONGO_CONNECTION_STRING}`);
+connect(`${process.env.MONGO_CONNECTION_STRING}`, getMongoDbOptions(config));
 
 const port = process.env.PORT_DEV;
 app.listen(`${port}`, () => {
