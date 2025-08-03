@@ -1,46 +1,24 @@
-import { errorCodes } from "./errorCodes.js";
+import { BaseError } from "./errors";
+import { logger } from "../logging/logger.js";
 
-class BaseError extends Error {
-    constructor(name, statusCode, isOperational, description) {
-        super(description);
-
-        Object.setPrototypeOf(this, new.target.prototype);
-        this.name = name;
-        this.statusCode = statusCode;
-        this.isOperational = isOperational;
-        Error.captureStackTrace(this);
-    }
+function logError(err) {
+    logger.error(err);
 }
 
-class NotFoundError extends BaseError {
-    constructor(
-        name,
-        statusCode = errorCodes.NOT_FOUND,
-        isOperational = true,
-        description = "Not found"
-    ) {
-        super(name, statusCode, isOperational, description);
-    }
+function logErrorMiddleware(err, req, res, next) {
+    logError(err);
+    next(err);
 }
 
-class BadRequestError extends BaseError {
-    constructor(
-        name,
-        statusCode = errorCodes.BAD_REQUEST,
-        isOperational = true,
-        description = "Bad request"
-    ) {
-        super(name, statusCode, isOperational, description);
-    }
+function returnError(err, req, res, next) {
+    res.status(err.statusCode || 500).send(err.message);
 }
 
-class InternalServerError extends BaseError {
-    constructor(
-        name,
-        statusCode = errorCodes.INTERNAL_SERVER_ERROR,
-        isOperational = true,
-        description = "Internal server error"
-    ) {
-        super(name, statusCode, isOperational, description);
+function isOperationalError(err) {
+    if (err instanceof BaseError) {
+        return err.isOperational;
     }
+    return false;
 }
+
+export { logError, logErrorMiddleware, returnError, isOperationalError };
