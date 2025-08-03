@@ -26,7 +26,7 @@ app.use("/api", postRoutes);
 // connection to mongo with mongoose, handling errors
 const options = getMongoDbOptions(config);
 console.log(options);
-connect(`${process.env.MONGO_CONNECTION_STRING}`, database);
+connect(`${process.env.MONGO_CONNECTION_STRING}`, options);
 
 process.on("unhandledRejection", (error) => {
     throw error;

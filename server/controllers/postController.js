@@ -14,12 +14,14 @@ const create = async (req, res) => {
                 "Missing title or content, title and content are required"
             );
         }
+
         const post = await postService.createPost(
             title,
             content,
             category,
             tags
         );
+
         res.status(200).json({ message: "post created", post });
     } catch (error) {
         logError(error);
